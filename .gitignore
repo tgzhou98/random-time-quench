@@ -1,0 +1,19 @@
+# Conda
+.env/
+.venv/
+*.conda
+
+# Logs
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+AGENTS.md
