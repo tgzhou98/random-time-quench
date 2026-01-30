@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from quench_protocols.distributions import get_time_sampler
+from quench_protocols.distributions import get_time_sampler, sample_times_hann, sample_times_kaiser
 from quench_protocols.protocols import ThreeTimeProtocol, TwoTimeProtocol
 from quench_protocols.random_matrices import sample_gue
 
@@ -47,3 +47,17 @@ def test_sampling_is_reproducible_with_seed() -> None:
     U1 = protocol.sample_unitary(rng1, 1.5, sampler)
     U2 = protocol.sample_unitary(rng2, 1.5, sampler)
     np.testing.assert_allclose(U1, U2, atol=1e-12)
+
+
+def test_hann_sampler_bounds() -> None:
+    rng = np.random.default_rng(0)
+    samples = sample_times_hann(rng, 2.0, size=1000)
+    assert np.all(samples >= 0.0)
+    assert np.all(samples <= 2.0)
+
+
+def test_kaiser_sampler_bounds() -> None:
+    rng = np.random.default_rng(1)
+    samples = sample_times_kaiser(rng, 3.0, size=1000, beta=6.0)
+    assert np.all(samples >= 0.0)
+    assert np.all(samples <= 3.0)

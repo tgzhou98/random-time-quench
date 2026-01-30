@@ -1,6 +1,11 @@
 """Quench protocols and frame potential estimators."""
 
-from .distributions import get_time_sampler, sample_times_uniform
+from .distributions import (
+    get_time_sampler,
+    sample_times_hann,
+    sample_times_kaiser,
+    sample_times_uniform,
+)
 from .frame_potential import (
     estimate_frame_potential,
     estimate_frame_potential_list,
@@ -15,6 +20,8 @@ __all__ = [
     "estimate_frame_potential",
     "estimate_frame_potential_list",
     "get_time_sampler",
+    "sample_times_hann",
+    "sample_times_kaiser",
     "sample_gue",
     "sample_times_uniform",
     "trace_overlap_power",

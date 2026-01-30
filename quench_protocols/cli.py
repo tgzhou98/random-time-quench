@@ -21,6 +21,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--dim", type=int, default=8)
     parser.add_argument("--assume-hermitian", action="store_true")
     parser.add_argument("--sampler", type=str, default="uniform")
+    parser.add_argument("--sampler-beta", type=float, default=None, help="Kaiser beta parameter.")
     return parser.parse_args()
 
 
@@ -43,6 +44,7 @@ def main() -> None:
         num_pairs=args.pairs,
         rng=rng,
         sampler_name=args.sampler,
+        sampler_kwargs={"beta": args.sampler_beta} if args.sampler_beta is not None else None,
     )
     print(estimate)
 

@@ -19,6 +19,14 @@ The CLI prints a single floating-point estimate of the frame potential:
 
 This value is **stochastic** because it is a Monte Carlo estimate. It will generally change if you change `--seed`, `--pairs`, `--dim`, or `--T`. With the same seed and parameters, the output should be reproducible (up to tiny floating-point differences across platforms).
 
+### Alternative time samplers
+You can swap the time distribution with `--sampler`:
+
+```bash
+python -m quench_protocols.cli --protocol three --k 4 --T 100 --pairs 1000 --seed 42 --dim 200 --sampler hann
+python -m quench_protocols.cli --protocol three --k 4 --T 100 --pairs 1000 --seed 42 --dim 200 --sampler kaiser --sampler-beta 8.0
+```
+
 ## Running tests
 
 ```bash
