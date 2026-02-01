@@ -9,6 +9,7 @@ import numpy as np
 from .frame_potential import estimate_frame_potential
 from .protocols import ThreeTimeProtocol, TwoTimeProtocol
 from .random_matrices import sample_gue
+from .spin_model import sample_spin_hamiltonian
 
 
 def _parse_args() -> argparse.Namespace:
@@ -18,7 +19,13 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--T", type=float, default=10.0)
     parser.add_argument("--pairs", type=int, default=2000)
     parser.add_argument("--seed", type=int, default=0)
-    parser.add_argument("--dim", type=int, default=8)
+    parser.add_argument("--model", choices=["gue", "spin"], default="gue")
+    parser.add_argument("--dim", type=int, default=None)
+    parser.add_argument("--n-spins", type=int, default=None)
+    parser.add_argument("--J", type=float, default=1.0)
+    parser.add_argument("--xi-x", type=float, default=1.0)
+    parser.add_argument("--xi-y", type=float, default=1.0)
+    parser.add_argument("--xi-z", type=float, default=-2.0)
     parser.add_argument("--assume-hermitian", action="store_true")
     parser.add_argument("--sampler", type=str, default="uniform")
     parser.add_argument("--sampler-beta", type=float, default=None, help="Kaiser beta parameter.")
@@ -29,12 +36,27 @@ def main() -> None:
     args = _parse_args()
     rng = np.random.default_rng(args.seed)
 
-    H1 = sample_gue(rng, args.dim)
-    H2 = sample_gue(rng, args.dim)
+    if args.model == "spin":
+        if args.dim is not None:
+            raise ValueError("--dim is not supported when --model spin is selected.")
+        n_spins = 8 if args.n_spins is None else args.n_spins
+        xi = (args.xi_x, args.xi_y, args.xi_z)
+        H1 = sample_spin_hamiltonian(rng, N=n_spins, J=args.J, xi=xi)
+        H2 = sample_spin_hamiltonian(rng, N=n_spins, J=args.J, xi=xi)
+    else:
+        if args.n_spins is not None:
+            raise ValueError("--n-spins is only supported when --model spin is selected.")
+        dim = 8 if args.dim is None else args.dim
+        H1 = sample_gue(rng, dim)
+        H2 = sample_gue(rng, dim)
+
     if args.protocol == "two":
         protocol = TwoTimeProtocol(H1, H2, assume_hermitian=args.assume_hermitian)
     else:
-        H3 = sample_gue(rng, args.dim)
+        if args.model == "spin":
+            H3 = sample_spin_hamiltonian(rng, N=n_spins, J=args.J, xi=xi)
+        else:
+            H3 = sample_gue(rng, dim)
         protocol = ThreeTimeProtocol(H1, H2, H3, assume_hermitian=args.assume_hermitian)
 
     estimate = estimate_frame_potential(
