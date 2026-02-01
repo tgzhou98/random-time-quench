@@ -10,6 +10,12 @@ Create an environment with `numpy` and `scipy`, then run the CLI:
 python -m quench_protocols.cli --protocol two --k 2 --T 10 --pairs 2000 --seed 0 --dim 8
 ```
 
+### Spin model example
+
+```bash
+python -m quench_protocols.cli --model spin --protocol two --k 2 --T 10 --pairs 2000 --seed 0 --n-spins 8 --J 1.0 --xi-x 1 --xi-y 1 --xi-z -2
+```
+
 ### What is the result?
 The CLI prints a single floating-point estimate of the frame potential:
 
@@ -17,7 +23,7 @@ The CLI prints a single floating-point estimate of the frame potential:
 53.420397783696785
 ```
 
-This value is **stochastic** because it is a Monte Carlo estimate. It will generally change if you change `--seed`, `--pairs`, `--dim`, or `--T`. With the same seed and parameters, the output should be reproducible (up to tiny floating-point differences across platforms).
+This value is **stochastic** because it is a Monte Carlo estimate. It will generally change if you change `--seed`, `--pairs`, `--dim`, `--n-spins`, or `--T`. With the same seed and parameters, the output should be reproducible (up to tiny floating-point differences across platforms).
 
 ### Alternative time samplers
 You can swap the time distribution with `--sampler`:
@@ -40,6 +46,7 @@ import numpy as np
 from quench_protocols.protocols import TwoTimeProtocol
 from quench_protocols.frame_potential import estimate_frame_potential
 from quench_protocols.random_matrices import sample_gue
+from quench_protocols.spin_model import sample_spin_hamiltonian
 
 rng = np.random.default_rng(0)
 H1 = sample_gue(rng, 8)
@@ -48,4 +55,10 @@ H2 = sample_gue(rng, 8)
 protocol = TwoTimeProtocol(H1, H2, assume_hermitian=True)
 F2 = estimate_frame_potential(protocol, T=10.0, k=2, num_pairs=2000, rng=rng)
 print(F2)
+
+H1_spin = sample_spin_hamiltonian(rng, N=8, J=1.0, xi=(1.0, 1.0, -2.0))
+H2_spin = sample_spin_hamiltonian(rng, N=8, J=1.0, xi=(1.0, 1.0, -2.0))
+protocol_spin = TwoTimeProtocol(H1_spin, H2_spin, assume_hermitian=True)
+F2_spin = estimate_frame_potential(protocol_spin, T=10.0, k=2, num_pairs=2000, rng=rng)
+print(F2_spin)
 ```
