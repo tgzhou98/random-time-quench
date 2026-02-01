@@ -13,6 +13,11 @@ from .frame_potential import (
 )
 from .protocols import ThreeTimeProtocol, TwoTimeProtocol
 from .random_matrices import sample_gue
+from .spin_model import (
+    build_spin_hamiltonian,
+    sample_spin_couplings,
+    sample_spin_hamiltonian,
+)
 
 __all__ = [
     "ThreeTimeProtocol",
@@ -25,4 +30,7 @@ __all__ = [
     "sample_gue",
     "sample_times_uniform",
     "trace_overlap_power",
+    "build_spin_hamiltonian",
+    "sample_spin_couplings",
+    "sample_spin_hamiltonian",
 ]
