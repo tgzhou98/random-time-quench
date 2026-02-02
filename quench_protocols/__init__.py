@@ -18,7 +18,12 @@ from .spin_model import (
     sample_spin_couplings,
     sample_spin_hamiltonian,
 )
-from .syk_model import build_hamiltonian, generate_couplings, lookup_coupling
+from .syk_model import (
+    build_hamiltonian,
+    generate_couplings,
+    lookup_coupling,
+    sample_syk_hamiltonian,
+)
 
 __all__ = [
     "ThreeTimeProtocol",
@@ -35,6 +40,7 @@ __all__ = [
     "build_hamiltonian",
     "generate_couplings",
     "lookup_coupling",
+    "sample_syk_hamiltonian",
     "sample_spin_couplings",
     "sample_spin_hamiltonian",
 ]

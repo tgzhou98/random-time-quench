@@ -119,3 +119,14 @@ def build_hamiltonian(couplings: CouplingDict, N: int, charge_sector: str = "hal
             H[row, col] += value * sign
 
     return H + H.conj().T
+
+
+def sample_syk_hamiltonian(
+    rng: np.random.Generator,
+    N: int,
+    J: float,
+    charge_sector: str = "half",
+) -> np.ndarray:
+    """Sample couplings and build the corresponding SYK Hamiltonian."""
+    couplings = generate_couplings(rng, N=N, J=J)
+    return build_hamiltonian(couplings, N=N, charge_sector=charge_sector)
