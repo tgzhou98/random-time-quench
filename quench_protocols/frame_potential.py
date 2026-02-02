@@ -54,6 +54,7 @@ def estimate_frame_potential(
     rng: np.random.Generator,
     sampler_name: str = "uniform",
     sampler_kwargs: dict[str, object] | None = None,
+    t0: float | None = None,
 ) -> float:
     """Estimate the k-th frame potential by Monte Carlo sampling."""
     if num_pairs <= 0:
@@ -63,7 +64,11 @@ def estimate_frame_potential(
     if k < 1:
         raise ValueError("k must be a positive integer.")
 
-    sampler = get_time_sampler(sampler_name, **(sampler_kwargs or {}))
+    merged_kwargs: dict[str, object] = dict(sampler_kwargs or {})
+    if t0 is not None:
+        merged_kwargs["t0"] = float(t0)
+
+    sampler = get_time_sampler(sampler_name, **merged_kwargs)
     values = np.empty(num_pairs, dtype=float)
     for idx in range(num_pairs):
         U = protocol.sample_unitary(rng, T, sampler)
@@ -84,6 +89,7 @@ def estimate_frame_potential_list(
     rng: np.random.Generator,
     sampler_name: str = "uniform",
     sampler_kwargs: dict[str, object] | None = None,
+    t0: float | None = None,
 ) -> dict[int, float]:
     """Estimate frame potentials for multiple k values using shared samples."""
     if num_pairs <= 0:
@@ -97,7 +103,11 @@ def estimate_frame_potential_list(
     if any(k < 1 for k in ks):
         raise ValueError("k_list entries must be positive integers.")
 
-    sampler = get_time_sampler(sampler_name, **(sampler_kwargs or {}))
+    merged_kwargs: dict[str, object] = dict(sampler_kwargs or {})
+    if t0 is not None:
+        merged_kwargs["t0"] = float(t0)
+
+    sampler = get_time_sampler(sampler_name, **merged_kwargs)
     abs_traces = np.empty(num_pairs, dtype=float)
     for idx in range(num_pairs):
         U = protocol.sample_unitary(rng, T, sampler)

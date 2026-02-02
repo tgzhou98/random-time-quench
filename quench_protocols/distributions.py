@@ -7,11 +7,17 @@ from typing import Callable
 import numpy as np
 
 
-def sample_times_uniform(rng: np.random.Generator, T: float, size: int | tuple[int, ...]) -> np.ndarray:
-    """Sample i.i.d. times uniformly from [0, T]."""
+def sample_times_uniform(
+    rng: np.random.Generator,
+    T: float,
+    size: int | tuple[int, ...],
+    t0: float = 0.0,
+) -> np.ndarray:
+    """Sample i.i.d. times uniformly from [t0, t0 + T]."""
     if T < 0:
         raise ValueError("T must be non-negative.")
-    return rng.uniform(0.0, float(T), size=size)
+    t0_f = float(t0)
+    return rng.uniform(t0_f, t0_f + float(T), size=size)
 
 
 def sample_times_hann(rng: np.random.Generator, T: float, size: int | tuple[int, ...]) -> np.ndarray:
@@ -86,8 +92,11 @@ def get_time_sampler(name: str, **kwargs: object) -> Callable[[np.random.Generat
     """
     name_lower = name.lower()
     if name_lower == "uniform":
+        # For a shifted uniform distribution, pass t0 (or T0) in sampler_kwargs.
+        t0 = float(kwargs.get("t0", kwargs.get("T0", 0.0)))
+
         def _sampler(rng: np.random.Generator, T: float, size: int | tuple[int, ...]) -> np.ndarray:
-            return sample_times_uniform(rng, T, size)
+            return sample_times_uniform(rng, T, size, t0=t0)
 
         return _sampler
     if name_lower == "hann":
